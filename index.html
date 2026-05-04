@@ -138,10 +138,13 @@
         }
 
         .n-end {
-            background-color: #22c55e;
-            border: 2px solid #166534;
-            border-radius: 8px;
-            color: white;
+            background-color: #fee2e2;
+            border: 2px solid #ef4444;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            min-height: 60px;
+            color: #991b1b;
         }
 
         .n-note {
@@ -219,6 +222,48 @@
             width: 2px;
             background-color: #94a3b8;
             min-height: 20px;
+        }
+
+        /* Template User Flow Styles */
+        .svg-lines {
+            pointer-events: none;
+        }
+
+        .line {
+            fill: none;
+            stroke: #CBD5E1;
+            stroke-width: 1.2;
+        }
+
+        .connection-path {
+            fill: none;
+            stroke: #94a3b8;
+            stroke-width: 2;
+        }
+
+        .connection-label {
+            position: absolute;
+            background: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 800;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 15;
+            border: 1px solid #e2e8f0;
+        }
+        .label-yes { color: #059669; border-color: #10b981; }
+        .label-no { color: #dc2626; border-color: #ef4444; }
+
+        .n-pink {
+            background: #fce7f3;
+            border-color: #f9a8d4;
+            color: #9d174d;
+            border-style: dashed;
+            font-size: 10px;
+            min-width: 120px;
         }
     </style>
 </head>
@@ -394,6 +439,33 @@
 
                 <!-- METRICS IN CHARGE: LIST -->
                 <div id="tab-metrics-list" class="tab-content fade-in">
+
+                    <!-- Brief UI/UX Section for Metrics -->
+                    <div
+                        class="bg-primary/5 border border-primary/20 rounded-2xl p-6 mb-8 flex justify-between items-center shadow-sm">
+                        <div class="flex items-center gap-5">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center text-xl shadow-md">
+                                <i class="fas fa-pencil-ruler"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-primary-dark">Brief UI/UX & Konsep</h3>
+                                <p class="text-sm text-gray-600">Pelajari alur kerja dan konsep high-level mapping metrics
+                                    di sini.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="switchTab('metrics-flowchart')"
+                                class="bg-white border border-primary/30 text-primary px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-primary hover:text-white transition-all flex items-center gap-2 shadow-sm">
+                                <i class="fas fa-project-diagram"></i> Lihat User Flow
+                            </button>
+                            <button onclick="openMetricsConceptModal()"
+                                class="bg-primary text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-dark transition-all flex items-center gap-2 shadow-md">
+                                <i class="fas fa-lightbulb"></i> High Level Concept
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="p-5 border-b border-gray-100 flex justify-between items-center">
                             <div>
@@ -446,8 +518,97 @@
                         </div>
                     </div>
 
-                    <div id="metrics-container" class="space-y-6 pb-10">
+                    <div id="metrics-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10">
                         <!-- Metrics from DB rendered here -->
+                    </div>
+                </div>
+
+                <!-- METRICS IN CHARGE: FLOWCHART -->
+                <div id="tab-metrics-flowchart" class="tab-content fade-in">
+                    <button onclick="switchTab('metrics-list')"
+                        class="mb-5 text-sm font-semibold text-gray-500 hover:text-primary transition-colors"><i
+                            class="fas fa-arrow-left"></i> Kembali ke Daftar Role</button>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
+                        <!-- Legend Floating Card (Fixed relative to the tab container) -->
+                        <div class="absolute bottom-6 left-6 z-50 bg-white/95 backdrop-blur-sm p-5 rounded-2xl border border-gray-200 shadow-xl w-52 pointer-events-none">
+                            <p class="font-black text-[10px] text-gray-400 uppercase tracking-widest mb-3 border-b border-gray-100 pb-2">Keterangan Alur</p>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3 text-[11px] font-bold text-gray-700">
+                                    <div class="w-3.5 h-3.5 rounded-full bg-[#dcfce7] border border-[#22c55e]"></div> Titik Mulai
+                                </div>
+                                <div class="flex items-center gap-3 text-[11px] font-bold text-gray-700">
+                                    <div class="w-3.5 h-3.5 rounded-full bg-[#fee2e2] border border-[#ef4444]"></div> Titik Akhir
+                                </div>
+                                <div class="flex items-center gap-3 text-[11px] font-bold text-gray-700">
+                                    <div class="w-3.5 h-3.5 rounded bg-[#f3e8ff] border border-[#d8b4fe]"></div> Aksi User
+                                </div>
+                                <div class="flex items-center gap-3 text-[11px] font-bold text-gray-700">
+                                    <div class="w-3.5 h-3.5 rounded bg-[#f1f5f9] border border-[#cbd5e1]"></div> Proses Sistem
+                                </div>
+                                <div class="flex items-center gap-3 text-[11px] font-bold text-gray-700">
+                                    <div class="w-3 h-3 rotate-45 bg-[#ffedd5] border border-[#fdba74] ml-0.5"></div> Keputusan
+                                </div>
+                                <div class="flex items-center gap-3 text-[11px] font-bold text-gray-700">
+                                    <div class="w-3.5 h-3.5 rounded border border-pink-400 border-dashed bg-pink-50"></div> Note / Catatan
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-5 border-b border-gray-100 bg-gray-50 flex flex-wrap gap-4 items-center justify-between">
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-800">User Flow Mapping Metrics in Charge</h2>
+                                <p class="text-xs text-gray-500 mt-1">Gunakan scroll/pan untuk navigasi alur mapping.</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                                    <button onclick="zoomOut()" class="px-3 py-1.5 text-gray-600 hover:bg-gray-100 border-r border-gray-200"><i class="fas fa-minus text-xs"></i></button>
+                                    <span id="zoom-level-metrics" class="px-3 py-1.5 text-xs font-semibold text-gray-700 w-14 text-center">100%</span>
+                                    <button onclick="zoomIn()" class="px-3 py-1.5 text-gray-600 hover:bg-gray-100 border-l border-gray-200"><i class="fas fa-plus text-xs"></i></button>
+                                    <button onclick="resetZoom()" class="px-3 py-1.5 text-gray-600 hover:bg-gray-100 border-l border-gray-200"><i class="fas fa-compress text-xs"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="viewport" id="viewport-metrics" style="background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 40px 40px;">
+                            <div id="metrics-flow-canvas" style="transform-origin: 0 0; transition: transform 0.15s ease-out; padding: 500px; position: relative; min-width: 4000px; min-height: 2000px;">
+                                <svg class="svg-layer" id="svg-layer-metrics" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;">
+                                    <defs>
+                                        <marker id="arrow-metrics" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="6" markerHeight="6" orient="auto">
+                                            <path d="M 0 -5 L 10 0 L 0 5 Z" fill="#94a3b8" />
+                                        </marker>
+                                    </defs>
+                                </svg>
+
+                                <div id="m-node-start" class="node n-start" style="position: absolute; left: 500px; top: 500px;">Start</div>
+                                <div id="m-node-menu" class="node n-purple" style="position: absolute; left: 660px; top: 500px;">Akses Menu<br>Pengaturan</div>
+                                <div id="m-node-tab" class="node n-purple" style="position: absolute; left: 900px; top: 500px;">Pilih Tab<br>Metrics in Charge</div>
+                                <div id="m-node-render" class="node n-gray" style="position: absolute; left: 1140px; top: 500px;">Render Daftar<br>Role User</div>
+                                <div id="m-node-map" class="node n-purple" style="position: absolute; left: 1380px; top: 500px;">Klik Mapping<br>Metrics</div>
+                                
+                                <div id="m-node-check" class="node n-decision" style="position: absolute; left: 1620px; top: 485px;">
+                                    <span>Sudah Ada<br>Mapping?</span>
+                                </div>
+                                
+                                <div id="m-node-form-filled" class="node n-gray" style="position: absolute; left: 1860px; top: 420px;">Render Form<br>(Mapping Terisi)</div>
+                                <div id="m-node-form-empty" class="node n-gray" style="position: absolute; left: 1860px; top: 580px;">Render Form<br>(Mapping Kosong)</div>
+                                
+                                <div id="m-node-select" class="node n-purple" style="position: absolute; left: 2100px; top: 500px;">Pilih Metrics<br>yang Diberikan</div>
+                                <div id="m-node-save" class="node n-purple" style="position: absolute; left: 2340px; top: 500px;">Klik Simpan</div>
+                                
+                                <div id="m-node-confirm" class="node n-decision" style="position: absolute; left: 2580px; top: 485px;">
+                                    <span>Konfirmasi<br>Simpan?</span>
+                                </div>
+                                
+                                <div id="m-node-success" class="node n-gray" style="position: absolute; left: 2820px; top: 500px;">Tampilkan Form<br>Sukses</div>
+                                <div id="m-node-impl" class="node n-gray" style="position: absolute; left: 3060px; top: 500px;">Implementasi<br>Perubahan Metrics</div>
+                                <div id="m-node-end" class="node n-end" style="position: absolute; left: 3300px; top: 500px;">End</div>
+                                
+                                <div id="m-node-back" class="node n-purple" style="position: absolute; left: 2570px; top: 700px;">Kembali ke Form</div>
+                            </div>
+                        </div>
+
+                        </div>
                     </div>
                 </div>
 
@@ -745,10 +906,20 @@
                 if (tabId === 'line-approval-flowchart' && typeof resetZoom === 'function') resetZoom();
             } else if (tabId.includes('metrics')) {
                 document.getElementById('nav-metrics').classList.add('bg-white', 'text-primary', 'shadow-sm');
-                document.getElementById('header-title').textContent = 'Metrics in Charge';
+                document.getElementById('header-title').textContent = tabId === 'metrics-flowchart' ? 'User Flow (Metrics)' : 'Metrics in Charge';
                 if (tabId === 'metrics-list') renderMetricsList();
+                if (tabId === 'metrics-flowchart') {
+                    if (typeof resetZoom === 'function') resetZoom();
+                    setTimeout(() => {
+                        initDraggableMetrics();
+                        updateConnectionsMetrics();
+                    }, 50);
+                }
             }
         }
+
+        function openMetricsConceptModal() { document.getElementById('metrics-concept-modal').classList.remove('hidden'); }
+        function closeMetricsConceptModal() { document.getElementById('metrics-concept-modal').classList.add('hidden'); }
 
         function filterByModul() {
             const val = document.getElementById('filter-modul').value;
@@ -871,40 +1042,66 @@
         // METRICS CONCEPT LOGIC
         const dbMetricsHierarchical = [
             {
-                name: 'Menu SKU',
-                groups: [
+                platform: 'Master',
+                menus: [
                     {
-                        name: 'Akses Laporan SKU',
-                        items: [
-                            { id: 'm1_p1', name: 'Perusahaan 1' },
-                            { id: 'm1_p2', name: 'Perusahaan 2' },
-                            { id: 'm1_p3', name: 'Perusahaan 3' },
-                            { id: 'm1_p4', name: 'Perusahaan 4' },
-                            { id: 'm1_p5', name: 'Perusahaan 5' },
-                            { id: 'm1_p6', name: 'Perusahaan 6' }
+                        name: 'Menu SKU',
+                        groups: [
+                            {
+                                name: 'Akses Laporan',
+                                items: [
+                                    { id: 'm1_p1', name: 'Laporan Perusahaan A' },
+                                    { id: 'm1_p2', name: 'Laporan Perusahaan B' },
+                                    { id: 'm1_p3', name: 'Laporan Perusahaan (Kondisi 1)' },
+                                    { id: 'm1_p4', name: 'Perusahaan 4' },
+                                    { id: 'm1_p5', name: 'Perusahaan 5' },
+                                    { id: 'm1_p6', name: 'Perusahaan 6' }
+                                ]
+                            },
+                            {
+                                name: 'Akses Riwayat',
+                                items: [
+                                    { id: 'm3', name: 'Lihat Riwayat' },
+                                    { id: 'm4', name: 'Audit Log' }
+                                ]
+                            },
+                            {
+                                name: 'Role Metrics',
+                                items: [
+                                    { id: 'rm1', name: 'Metric Role Admin' },
+                                    { id: 'rm2', name: 'Metric Role Manager' },
+                                    { id: 'rm3', name: 'Metric Role Supervisor' }
+                                ]
+                            }
                         ]
                     },
                     {
-                        name: 'Akses Laporan 2',
-                        items: [
-                            { id: 'm2_p1', name: 'Perusahaan 1' },
-                            { id: 'm2_p2', name: 'Perusahaan 2' },
-                            { id: 'm2_p3', name: 'Perusahaan 3' },
-                            { id: 'm2_p4', name: 'Perusahaan 4' },
-                            { id: 'm2_p5', name: 'Perusahaan 5' },
-                            { id: 'm2_p6', name: 'Perusahaan 6' }
+                        name: 'Menu Master Data',
+                        groups: [
+                            {
+                                name: 'Akses Data Dasar',
+                                items: [
+                                    { id: 'md1', name: 'Data Supplier' },
+                                    { id: 'md2', name: 'Data Customer' }
+                                ]
+                            }
                         ]
                     }
                 ]
             },
             {
-                name: 'Menu Riwayat & Audit',
-                groups: [
+                platform: 'Procurement',
+                menus: [
                     {
-                        name: 'Akses Audit',
-                        items: [
-                            { id: 'm3', name: 'Lihat Riwayat' },
-                            { id: 'm4', name: 'Audit Log' }
+                        name: 'Menu Supplier',
+                        groups: [
+                            {
+                                name: 'Mapping Vendor',
+                                items: [
+                                    { id: 'v1', name: 'Vendor Lokal' },
+                                    { id: 'v2', name: 'Vendor Import' }
+                                ]
+                            }
                         ]
                     }
                 ]
@@ -952,45 +1149,76 @@
             // Simpan ke temp agar tidak langsung merubah list sebelum disubmit
             window.currentEditingRole = roleName;
             window.tempMetricState = [...window.metricRoleState[roleName]];
+            window.platformState = {}; // Reset platform expand/collapse state on open
 
             renderMetricsForm();
             switchTab('metrics-detail');
         }
 
+        function togglePlatform(pIdx) {
+            window.platformState[pIdx] = window.platformState[pIdx] === false ? true : false;
+            renderMetricsForm();
+        }
+
         function renderMetricsForm() {
             const container = document.getElementById('metrics-container');
-            container.innerHTML = dbMetricsHierarchical.map((menu, mIdx) => `
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
-                    <div class="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
-                        <h4 class="font-bold text-gray-700 flex items-center gap-2">
-                            <i class="fas fa-folder-open text-primary text-xs"></i> ${menu.name}
-                        </h4>
-                    </div>
-                    <div class="p-5 space-y-8">
-                        ${menu.groups.map(group => `
-                            <div>
-                                <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-primary"></span> ${group.name}
-                                </p>
-                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                                    ${group.items.map(item => {
+            if (!window.platformState) window.platformState = {};
+
+            container.innerHTML = dbMetricsHierarchical.map((platformData, pIdx) => {
+                const isExpanded = window.platformState[pIdx] !== false;
+                return `
+                <div class="col-span-full mt-6 mb-2">
+                    <button onclick="togglePlatform(${pIdx})" class="w-full flex items-center justify-between group p-2 rounded-xl hover:bg-gray-50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="h-8 w-1.5 bg-primary rounded-full transition-all group-hover:scale-y-110"></div>
+                            <h3 class="text-lg font-black text-gray-800 uppercase tracking-tight flex items-center gap-3">
+                                Platform: ${platformData.platform}
+                                <span class="text-[10px] font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md uppercase tracking-widest">${platformData.menus.length} Menus</span>
+                            </h3>
+                        </div>
+                        <div class="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest">
+                            <span>${isExpanded ? 'Collapse' : 'Expand'}</span>
+                            <div class="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center shadow-sm group-hover:border-primary group-hover:text-primary transition-all">
+                                <i class="fas fa-chevron-${isExpanded ? 'up' : 'down'}"></i>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+                ${isExpanded ? platformData.menus.map((menu, mIdx) => `
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-full hover:shadow-md transition-shadow fade-in">
+                        <div class="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                            <h4 class="font-bold text-gray-700 flex items-center gap-2">
+                                <i class="fas fa-folder-open text-primary text-xs"></i> ${menu.name}
+                            </h4>
+                            <span class="text-[10px] bg-white px-2 py-0.5 rounded-full border border-gray-200 text-gray-400 font-bold">${platformData.platform}</span>
+                        </div>
+                        <div class="p-5 flex-1 space-y-8">
+                            ${menu.groups.map(group => `
+                                <div>
+                                    <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-primary"></span> ${group.name}
+                                    </p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        ${group.items.map(item => {
                 const isChecked = window.tempMetricState.includes(item.id) ? 'checked' : '';
                 return `
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border ${isChecked ? 'border-primary bg-primary/5' : 'border-gray-100 hover:bg-gray-50'} transition-all cursor-pointer group">
-                                            <input type="checkbox" 
-                                                   class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary cursor-pointer"
-                                                   ${isChecked}
-                                                   onchange="toggleMetricForRole('${item.id}')">
-                                            <span class="text-xs font-bold ${isChecked ? 'text-primary' : 'text-gray-600'}">${item.name}</span>
-                                        </label>
-                                        `
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border ${isChecked ? 'border-primary bg-primary/5' : 'border-gray-100 hover:bg-gray-50'} transition-all cursor-pointer group">
+                                                <input type="checkbox" 
+                                                       class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary cursor-pointer"
+                                                       ${isChecked}
+                                                       onchange="toggleMetricForRole('${item.id}')">
+                                                <span class="text-xs font-bold ${isChecked ? 'text-primary' : 'text-gray-600'}">${item.name}</span>
+                                            </label>
+                                            `
             }).join('')}
+                                    </div>
                                 </div>
-                            </div>
-                        `).join('')}
+                            `).join('')}
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('') : ''}
+            `;
+            }).join('');
         }
 
         function toggleMetricForRole(metricId) {
@@ -1121,7 +1349,21 @@
                 row.style.display = (val === 'all' || row.dataset.modul === val) ? '' : 'none';
             });
         }
-        function processSave() { document.getElementById('modal-confirm-state').classList.add('hidden'); document.getElementById('modal-success-state').classList.remove('hidden'); }
+        function processSave() {
+            const activeTab = document.querySelector('.tab-content.active').id;
+            if (activeTab.includes('metrics')) {
+                // Implementasi perubahan metrics
+                if (!window.metricRoleState) window.metricRoleState = {};
+                window.metricRoleState[window.currentEditingRole] = [...window.tempMetricState];
+                renderMetricsList();
+            } else {
+                // Mock save for Line Approval
+                currentConfig.status = 'Terkonfigurasi';
+            }
+            
+            document.getElementById('modal-confirm-state').classList.add('hidden');
+            document.getElementById('modal-success-state').classList.remove('hidden');
+        }
 
         // Flowchart Zoom & Pan Script
         let scale = 1;
@@ -1132,12 +1374,21 @@
 
         function updateZoom() {
             if (!wrapper) return;
-            wrapper.style.transform = `scale(${scale})`;
-            if (zoomText) zoomText.textContent = `${Math.round(scale * 100)}%`;
+            const activeTab = document.querySelector('.tab-content.active').id;
+            const targetWrapper = activeTab === 'tab-metrics-flowchart' ? document.getElementById('metrics-flow-canvas') : wrapper;
+            const targetZoomText = activeTab === 'tab-metrics-flowchart' ? document.getElementById('zoom-level-metrics') : zoomText;
+
+            if (targetWrapper) targetWrapper.style.transform = `scale(${scale})`;
+            if (targetZoomText) targetZoomText.textContent = `${Math.round(scale * 100)}%`;
         }
         function zoomIn() { if (scale < MAX_SCALE) { scale += STEP; updateZoom(); } }
         function zoomOut() { if (scale > MIN_SCALE) { scale -= STEP; updateZoom(); } }
-        function resetZoom() { scale = 1; updateZoom(); if (viewport) { viewport.scrollLeft = 0; viewport.scrollTop = 0; } }
+        function resetZoom() {
+            scale = 1; updateZoom();
+            const activeTab = document.querySelector('.tab-content.active').id;
+            const targetViewport = activeTab === 'tab-metrics-flowchart' ? document.getElementById('viewport-metrics') : viewport;
+            if (targetViewport) { targetViewport.scrollLeft = 0; targetViewport.scrollTop = 0; }
+        }
 
         if (viewport) {
             viewport.addEventListener('wheel', function (e) {
@@ -1172,7 +1423,251 @@
                 viewport.scrollTop = scrollTop - walkY;
             });
         }
+
+        // --- ADVANCED FLOWCHART LOGIC (METRICS) ---
+        const connectionsMetrics = [
+            { from: 'm-node-start', to: 'm-node-menu', fromEdge: 'right', toEdge: 'left' },
+            { from: 'm-node-menu', to: 'm-node-tab', fromEdge: 'right', toEdge: 'left' },
+            { from: 'm-node-tab', to: 'm-node-render', fromEdge: 'right', toEdge: 'left' },
+            { from: 'm-node-render', to: 'm-node-map', fromEdge: 'right', toEdge: 'left' },
+            { from: 'm-node-map', to: 'm-node-check', fromEdge: 'right', toEdge: 'left' },
+            
+            { from: 'm-node-check', to: 'm-node-form-filled', fromEdge: 'top', toEdge: 'left', label: 'YA', labelClass: 'label-yes' },
+            { from: 'm-node-check', to: 'm-node-form-empty', fromEdge: 'bottom', toEdge: 'left', label: 'TIDAK', labelClass: 'label-no' },
+            
+            { from: 'm-node-form-filled', to: 'm-node-select', fromEdge: 'right', toEdge: 'top' },
+            { from: 'm-node-form-empty', to: 'm-node-select', fromEdge: 'right', toEdge: 'bottom' },
+            
+            { from: 'm-node-select', to: 'm-node-save', fromEdge: 'right', toEdge: 'left' },
+            { from: 'm-node-save', to: 'm-node-confirm', fromEdge: 'right', toEdge: 'left' },
+            
+            { from: 'm-node-confirm', to: 'm-node-success', fromEdge: 'right', toEdge: 'left', label: 'YA', labelClass: 'label-yes' },
+            { from: 'm-node-success', to: 'm-node-impl', fromEdge: 'right', toEdge: 'left' },
+            { from: 'm-node-impl', to: 'm-node-end', fromEdge: 'right', toEdge: 'left' },
+            
+            { from: 'm-node-confirm', to: 'm-node-back', fromEdge: 'bottom', toEdge: 'top', label: 'TIDAK', labelClass: 'label-no' },
+            { from: 'm-node-back', to: 'm-node-select', fromEdge: 'left', toEdge: 'bottom' }
+        ];
+
+        function getEdgePoint(el, edge) {
+            const isDiamond = el.classList.contains('n-decision');
+            const isCircle = el.classList.contains('n-start') || el.classList.contains('n-end');
+            const x = el.offsetLeft; const y = el.offsetTop;
+            const w = el.offsetWidth; const h = el.offsetHeight;
+            const cx = x + w / 2; const cy = y + h / 2;
+
+            if (isDiamond) {
+                const offset = (w / 2) * Math.SQRT2;
+                switch (edge) {
+                    case 'top': return { x: cx, y: cy - offset };
+                    case 'bottom': return { x: cx, y: cy + offset };
+                    case 'left': return { x: cx - offset, y: cy };
+                    case 'right': return { x: cx + offset, y: cy };
+                }
+            } else if (isCircle) {
+                const r = w / 2;
+                switch (edge) {
+                    case 'top': return { x: cx, y: cy - r };
+                    case 'bottom': return { x: cx, y: cy + r };
+                    case 'left': return { x: cx - r, y: cy };
+                    case 'right': return { x: cx + r, y: cy };
+                }
+            } else {
+                switch (edge) {
+                    case 'top': return { x: cx, y: y };
+                    case 'bottom': return { x: cx, y: y + h };
+                    case 'left': return { x: x, y: cy };
+                    case 'right': return { x: x + w, y: cy };
+                }
+            }
+            return { x: cx, y: cy };
+        }
+
+        function updateConnectionsMetrics() {
+            const svgLayer = document.getElementById('svg-layer-metrics');
+            const canvas = document.getElementById('metrics-flow-canvas');
+            if (!svgLayer) return;
+
+            while (svgLayer.firstChild) {
+                if (svgLayer.firstChild.tagName === 'defs') {
+                    if (svgLayer.children.length === 1) break;
+                    let defs = svgLayer.firstChild;
+                    svgLayer.innerHTML = '';
+                    svgLayer.appendChild(defs);
+                    break;
+                }
+                svgLayer.removeChild(svgLayer.firstChild);
+            }
+            canvas.querySelectorAll('.connection-label').forEach(l => l.remove());
+
+            connectionsMetrics.forEach(conn => {
+                const fromEl = document.getElementById(conn.from);
+                const toEl = document.getElementById(conn.to);
+                if (!fromEl || !toEl) return;
+
+                const start = getEdgePoint(fromEl, conn.fromEdge);
+                const end = getEdgePoint(toEl, conn.toEdge);
+                const points = [start]; const offset = 25;
+
+                let p1 = { ...start };
+                if (conn.fromEdge === 'top') p1.y -= offset;
+                else if (conn.fromEdge === 'bottom') p1.y += offset;
+                else if (conn.fromEdge === 'left') p1.x -= offset;
+                else if (conn.fromEdge === 'right') p1.x += offset;
+                points.push(p1);
+
+                let p2 = { ...end };
+                if (conn.toEdge === 'top') p2.y -= offset;
+                else if (conn.toEdge === 'bottom') p2.y += offset;
+                else if (conn.toEdge === 'left') p2.x -= offset;
+                else if (conn.toEdge === 'right') p2.x += offset;
+
+                if (conn.fromEdge === 'left' || conn.fromEdge === 'right') {
+                    if (conn.toEdge === 'top' || conn.toEdge === 'bottom') points.push({ x: p2.x, y: p1.y });
+                    else { const midX = (p1.x + p2.x) / 2; points.push({ x: midX, y: p1.y }); points.push({ x: midX, y: p2.y }); }
+                } else {
+                    if (conn.toEdge === 'left' || conn.toEdge === 'right') points.push({ x: p1.x, y: p2.y });
+                    else { const midY = (p1.y + p2.y) / 2; points.push({ x: p1.x, y: midY }); points.push({ x: p2.x, y: midY }); }
+                }
+                points.push(p2); points.push(end);
+
+                let d = `M ${points[0].x} ${points[0].y}`;
+                for (let i = 1; i < points.length; i++) d += ` L ${points[i].x} ${points[i].y}`;
+
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", d);
+                path.setAttribute("class", "connection-path");
+                path.setAttribute("marker-end", "url(#arrow-metrics)");
+                svgLayer.appendChild(path);
+
+                if (conn.label) {
+                    const label = document.createElement('div');
+                    label.className = `connection-label ${conn.labelClass || ''}`;
+                    label.innerText = conn.label;
+                    let lX, lY;
+                    if (points.length === 6) { lX = (points[2].x + points[3].x) / 2; lY = (points[2].y + points[3].y) / 2; }
+                    else { lX = points[2].x; lY = points[2].y; }
+                    label.style.left = `${lX}px`; label.style.top = `${lY}px`;
+                    canvas.appendChild(label);
+                }
+            });
+        }
+
+        function initDraggableMetrics() {
+            const nodes = document.querySelectorAll('#metrics-flow-canvas .node');
+            nodes.forEach(node => {
+                let p1 = 0, p2 = 0, p3 = 0, p4 = 0;
+                node.onmousedown = (e) => {
+                    if (e.button !== 0) return;
+                    e.preventDefault(); e.stopPropagation();
+                    p3 = e.clientX; p4 = e.clientY;
+                    document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
+                    document.onmousemove = (e) => {
+                        e.preventDefault();
+                        p1 = p3 - e.clientX; p2 = p4 - e.clientY;
+                        p3 = e.clientX; p4 = e.clientY;
+                        node.style.top = (node.offsetTop - p2) + "px";
+                        node.style.left = (node.offsetLeft - p1) + "px";
+                        updateConnectionsMetrics();
+                    };
+                };
+            });
+        }
+
+        // Handle Metrics Viewport Panning
+        const viewportMetrics = document.getElementById('viewport-metrics');
+        if (viewportMetrics) {
+            viewportMetrics.addEventListener('wheel', function (e) {
+                if (e.ctrlKey || e.metaKey) {
+                    e.preventDefault();
+                    if (e.deltaY > 0) zoomOut(); else zoomIn();
+                }
+            });
+
+            let isDraggingM = false;
+            let startXM, startYM, scrollLeftM, scrollTopM;
+
+            viewportMetrics.addEventListener('mousedown', (e) => {
+                isDraggingM = true;
+                startXM = e.pageX - viewportMetrics.offsetLeft;
+                startYM = e.pageY - viewportMetrics.offsetTop;
+                scrollLeftM = viewportMetrics.scrollLeft;
+                scrollTopM = viewportMetrics.scrollTop;
+            });
+
+            viewportMetrics.addEventListener('mouseleave', () => { isDraggingM = false; });
+            viewportMetrics.addEventListener('mouseup', () => { isDraggingM = false; });
+
+            viewportMetrics.addEventListener('mousemove', (e) => {
+                if (!isDraggingM) return;
+                e.preventDefault();
+                const x = e.pageX - viewportMetrics.offsetLeft;
+                const y = e.pageY - viewportMetrics.offsetTop;
+                const walkX = (x - startXM) * 1.5;
+                const walkY = (y - startYM) * 1.5;
+                viewportMetrics.scrollLeft = scrollLeftM - walkX;
+                viewportMetrics.scrollTop = scrollTopM - walkY;
+            });
+        }
     </script>
+
+    <!-- Modal Concept Metrics -->
+    <div id="metrics-concept-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-overlay hidden">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-8 fade-in overflow-hidden relative">
+            <div class="absolute top-0 left-0 w-full h-2 bg-primary"></div>
+            <button onclick="closeMetricsConceptModal()"
+                class="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                <i class="fas fa-database text-primary"></i> High Level Concept: Metrics in Charge
+            </h3>
+
+            <div class="space-y-6 text-sm text-gray-600 leading-relaxed">
+                <section>
+                    <h4 class="font-bold text-gray-800 mb-2 uppercase tracking-wider text-xs">Apa itu Metrics in Charge?
+                    </h4>
+                    <p>Mekanisme untuk menentukan scope data dan fitur yang dapat diakses oleh user berdasarkan role mereka. Ini memastikan setiap user hanya melihat metrik dan data yang relevan dengan tanggung jawab mereka (Principle of Least Privilege).</p>
+                </section>
+
+                <section class="bg-gray-50 p-5 rounded-2xl border border-gray-100">
+                    <h4 class="font-bold text-gray-800 mb-3 text-sm flex items-center gap-2">
+                        <i class="fas fa-info-circle text-blue-500"></i> Contoh Case: Akses Laporan SKU
+                    </h4>
+                    <div class="space-y-3">
+                        <div class="flex gap-4">
+                            <div class="shrink-0 w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-[10px] font-bold">1</div>
+                            <p><b>Manager:</b> Memiliki akses ke laporan untuk PT. Alpha dan PT. Beta.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="shrink-0 w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-[10px] font-bold">2</div>
+                            <p><b>Supervisor:</b> Hanya memiliki akses ke laporan PT. Alpha saja.</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="shrink-0 w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-[10px] font-bold">3</div>
+                            <p><b>System:</b> Secara otomatis memfilter data di dashboard dan laporan berdasarkan mapping ini.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h4 class="font-bold text-gray-800 mb-2 uppercase tracking-wider text-xs">Struktur Mapping</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><b>Platform:</b> Pengelompokan besar (misal: Master, Procurement).</li>
+                        <li><b>Menu:</b> Fitur atau modul spesifik (misal: SKU Management).</li>
+                        <li><b>Group:</b> Kategori akses (misal: Akses Laporan, Akses Riwayat).</li>
+                        <li><b>Item:</b> Data dimension spesifik (misal: PT. Alpha).</li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-100">
+                <button onclick="closeMetricsConceptModal()"
+                    class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl transition-all">Tutup</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
